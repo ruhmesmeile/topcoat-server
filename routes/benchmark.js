@@ -122,7 +122,7 @@ var benchmark = function (db) {
 				console.log(err);
 			else {
 				res.render('view-results-new.jade', {
-					title : 'Topcoat Server',
+					title : 'DTAG Styleguide Benchmarks',
 					results: docs
 				});
 			}
