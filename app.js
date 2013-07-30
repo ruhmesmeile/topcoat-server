@@ -28,13 +28,13 @@ var express = require('express')
 var app = express();
 var db;
 
-if(process.env.PORT) { // switch between local and production env
-	db = mongoose.connect('mongodb://ec2-54-245-99-50.us-west-2.compute.amazonaws.com/topcoat');
-	console.log('Connected to amazondb');
-} else {
+//if(process.env.PORT) { // switch between local and production env
+//	db = mongoose.connect('mongodb://ec2-54-245-99-50.us-west-2.compute.amazonaws.com/topcoat');
+//	console.log('Connected to amazondb');
+//} else {
 	db = mongoose.connect('mongodb://localhost:27017/topcoat');
-	console.log('Fallback to localdb');
-}
+//	console.log('Fallback to localdb');
+//}
 
 var benchmark = require('./routes/benchmark')(db);
 
@@ -55,7 +55,7 @@ app.get('/', function(req, res){
 
 	res.render('index', {
 		layout : 'landing-layout.jade',
-		title : 'Topcoat Server'
+		title : 'DTAG Components Benchmarks'
 	});
 
 });
@@ -64,7 +64,7 @@ app.get('/baseline', function(req, res){
 	console.log('baseline');
 	res.render('baseline', {
 		layout : 'none',
-		title : 'Topcoat Server'
+		title : 'DTAG Components Benchmarks'
 	});
 
 });
@@ -77,7 +77,7 @@ app.get('/dashboard', function (req, res) {
 	var query = parser.query(url.parse(req.url).query);
 
 	res.render('dashboard.jade', {
-		'title'  : 'Topcoat Server',
+		'title'  : 'DTAG Components Benchmarks',
 		'test'   : query.test,
 		'device' : unescape(query.device)
 	});
@@ -147,7 +147,7 @@ app.post('/compare', function (req, res) {
 			res.end('Error');
 		} else {
 			res.render('compare', {
-				title : 'Topcoat Server',
+				title : 'DTAG Components Benchmarks',
 				results: docs
 			});
 
