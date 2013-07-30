@@ -1,3 +1,5 @@
 node_modules
 .DS_Store
 report
+*.pyc
+/src/tools/perf/page_sets/dtag/*
