@@ -15,14 +15,49 @@ limitations under the License.
 
 /*global module:false, require:false, process:false*/
 
-var path = require('path'),
-    chromiumSrc = process.env.CHROMIUM_SRC || "";
 
 module.exports = function(grunt) {
     'use strict';
 
+    var config = grunt.file.readJSON('package.json').config;
+
+    if (grunt.file.exists('config.json')) {
+       grunt.util._.extend(config, grunt.file.readJSON('config.json'));
+    }
+
+    grunt.initConfig({
+        config: config,
+        pagesets: 'page_sets',
+        perf: 'chromium/tools/perf',
+        dtag_init: {
+            options: '<%= config %>'
+        },
+        dtag_build: {
+            options: '<%= config %>'
+        },
+        copy: {
+            assets: {
+                files: [{
+                    expand: true,
+                    src: [
+                        'fonts/**',
+                        'images/**'
+                    ],
+                    dest: '<%= pagesets %>/',
+                    cwd: '<%= config.toolbox %>/dist/'
+                }]
+            }
+        },
+        clean: {
+            page_sets: '<%= pagesets %>'
+        }
+    });
+
     //Load local tasks
     grunt.loadTasks('tasks');
+
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-copy');
 
     // grunt.registerTask('default', '', function(platform, theme) {
     //     if (chromiumSrc === "") grunt.fail.warn("Set CHROMIUM_SRC to point to the correct location\n");

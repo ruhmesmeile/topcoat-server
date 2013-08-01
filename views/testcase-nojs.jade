@@ -1,0 +1,14 @@
+// Telemetry performance test case without JavaScript
+
+repeats = 500
+
+doctype 5
+html
+	head
+		title= title
+		link(rel='stylesheet', href=stylesheet)
+	body.no-js
+		.dtx
+			-while (repeats > 0)
+				-var repeats = repeats - 1
+				!{component}
