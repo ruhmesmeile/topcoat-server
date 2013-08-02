@@ -29,11 +29,29 @@ module.exports = function(grunt) {
         config: config,
         pagesets: 'page_sets',
         perf: 'chromium/tools/perf',
-        dtag_init: {
-            options: '<%= config %>'
+        testcase_prepare: {
+            options: {
+                src: '<%= config.toolbox %>',
+                dest: '<%= pagesets %>'
+            },
+            buttons: {
+                options: {
+                    sass: ['buttons'],
+                    scripts: [],
+                    html: '<button class="button icon-synchronize $modifier_class">' +
+                        '<span aria-hidden="true" class="icon"></span>' +
+                        '<span class="buttontext">Button</span>' +
+                        '</button>'
+                }
+            }
         },
-        dtag_build: {
-            options: '<%= config %>'
+        testcase_run: {
+            options: {
+                perf_dir: '<%= perf %>',
+                perf_tool: 'run_multipage_benchmarks',
+                pagesets: '<%= pagesets %>'
+            },
+            buttons: {}
         },
         copy: {
             assets: {

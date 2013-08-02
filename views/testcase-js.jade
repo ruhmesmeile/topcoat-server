@@ -1,0 +1,19 @@
+// Telemetry performance test case with JavaScript
+
+repeats = 500
+
+doctype 5
+html
+	head
+		title= title
+		link(rel='stylesheet', href=stylesheet)
+		script(type='text/javascript', data-main=script, src='scripts/require-jquery.js')
+		script(type="text/javascript").
+			var html = document.getElementsByTagName('html')[0];
+			html.setAttribute('class', 'js');
+
+	body.no-js
+		.dtx
+			-while (repeats > 0)
+				-var repeats = repeats - 1
+				!{component}
