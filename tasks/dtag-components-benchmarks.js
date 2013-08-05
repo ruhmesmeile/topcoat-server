@@ -15,10 +15,10 @@ module.exports = function (grunt) {
 	function initConfigJson(dir, sass, scripts, done) {
 		grunt.file.write(path.join(dir, 'config.json'), JSON.stringify({
 			sass: sass,
-			js: scripts,
+			scripts: scripts,
 			jquery: true,
 			ie: []
-		}));
+		}, null, 2));
 
 		// simulate exec call
 		done(null, '', '');
