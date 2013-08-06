@@ -20,12 +20,12 @@ var plot;
 var toolTipInfo = {
 	'mean_frame_time (ms)' : [],
 	'load_time (ms)' : [],
-	'Layout (ms)' : []
+	'dom_content_loaded_time (seconds)' : []
 };
 var plotData = {
 	'mean_frame_time (ms)' : [],
 	'load_time (ms)' : [],
-	'Layout (ms)' : []
+	'dom_content_loaded_time (seconds)' : []
 }
 
 var parse = function (data) {
@@ -43,7 +43,8 @@ function createPlotData (data) {
 	var count = {
 		'mean_frame_time (ms)' : 0,
 		'load_time (ms)' : 0,
-		'Layout (ms)' : 0
+		'first_paint (ms)' : 0,
+		'dom_content_loaded_time (seconds)' : 0
 	};
 	data.forEach(function (d) {
 		for (var row in d.result) {
@@ -257,17 +258,17 @@ function displayPlot () {
 		plotData = {
 			'mean_frame_time (ms)' : [],
 			'load_time (ms)' : [],
-			'Layout (ms)' : []
+			'dom_content_loaded_time (seconds)' : []
 		};
 		toolTipInfo = {
 			'mean_frame_time (ms)' : [],
 			'load_time (ms)' : [],
-			'Layout (ms)' : []
+			'dom_content_loaded_time (seconds)' : []
 		};
 		count = {
-			'mean_frame_time (ms)' : 0,
-			'load_time (ms)' : 0,
-			'Layout (ms)' : 0
+			'mean_frame_time (ms)' : [],
+			'load_time (ms)' : [],
+			'dom_content_loaded_time (seconds)' : []
 		};
 		parse(data);
 	});

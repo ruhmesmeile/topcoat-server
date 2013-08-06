@@ -20,6 +20,7 @@ var express = require('express')
   , mongoose = require('mongoose')
   , schemes = require('./schemes')
   , path = require('path')
+  , grunt = require('grunt')
   , uaParser = require('ua-parser')
   , url = require('url')
   , parser = require('./lib/parser')
@@ -28,19 +29,20 @@ var express = require('express')
 var app = express();
 var db;
 
-//if(process.env.PORT) { // switch between local and production env
-//	db = mongoose.connect('mongodb://ec2-54-245-99-50.us-west-2.compute.amazonaws.com/topcoat');
-//	console.log('Connected to amazondb');
-//} else {
-	db = mongoose.connect('mongodb://localhost:27017/topcoat');
-//	console.log('Fallback to localdb');
-//}
+// get config
+var config = grunt.file.readJSON('package.json').config;
+
+if (grunt.file.exists('config.json')) {
+	grunt.util._.extend(config, grunt.file.readJSON('config.json'));
+}
+
+db = mongoose.connect(config.mongoose);
 
 var benchmark = require('./routes/benchmark')(db);
 
 app.configure(function () {
   app.use(express.favicon(__dirname + '/public/img/favicon.ico'));
-  app.set('port', process.env.PORT || 3000);
+  app.set('port', config.server.port || 3000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.bodyParser());

@@ -120,71 +120,79 @@ module.exports = function (grunt) {
 					grunt.log.writeln(stdout);
 
 					// run grunt
+					// @TODO: evaluate use of grunt-hub here
 					exec('grunt components', {cwd: src},
 						function (error, stdout, stderr) {
-						if (error) {
-							grunt.log.error(error);
-							done();
-						}
+							if (error) {
+								grunt.log.error(error);
+								done();
+							}
 
-						// copy files
+							grunt.log.writeln(stdout);
 
-						grunt.file.copy(
-							src + '/dist/stylesheets/components.min.css',
-							dest + '/stylesheets/' + testcase + '.css');
+							// copy files
 
-						if (scripts.length > 0) {
 							grunt.file.copy(
-								src + '/dist/scripts/main.js',
-								dest + '/scripts/' + testcase + '.js');
-						}
+								src + '/dist/stylesheets/components.min.css',
+								dest + '/stylesheets/' + testcase + '.css');
 
-						// create templates
+							if (scripts.length > 0) {
+								grunt.file.copy(
+									src + '/dist/scripts/main.js',
+									dest + '/scripts/' + testcase + '.js');
+							}
 
-						grunt.file.write(
-							dest + '/' + testcase + '-nojs.html',
-							jade.renderFile('views/testcase-nojs.jade', {
-								title: 'Test: ' + testcase,
-								stylesheet: 'stylesheets/' + testcase + '.css',
-								component: html
-							}));
+							// create templates
 
-						json = {
-							description: 'Test: ' + testcase,
-							pages: [
-								{
-									url: 'file:///' + testcase + '-nojs.html',
-									smoothness: {
-										action: 'scroll'
-									}
-								}
-							]
-						};
-
-						if (scripts.length > 0) {
 							grunt.file.write(
-								dest + '/' + testcase + '-js.html',
-								jade.renderFile('views/testcase-js.jade', {
+								dest + '/' + testcase + '-nojs.html',
+								jade.renderFile('views/testcase-nojs.jade', {
 									title: 'Test: ' + testcase,
 									stylesheet: 'stylesheets/' + testcase + '.css',
-									component: html,
-									script: 'scripts/' + testcase + '.js'
+									component: html
 								}));
 
-							json.pages.push({
-								url: 'file:///' + testcase + '-js.html',
-								smoothness: {
-									action: 'scroll'
-								}
-							});
-						}
+							grunt.file.write(
+								dest + '/' + testcase + '-nojs.json',
+								JSON.stringify({
+									description: 'Test: ' + testcase,
+									pages: [
+										{
+											url: 'file:///' + testcase + '-nojs.html',
+											smoothness: {
+												action: 'scroll'
+											}
+										}
+									]
+								}));
 
-						grunt.file.write(
-							dest + '/' + testcase + '.json',
-							JSON.stringify(json, null, 2));
+							if (scripts.length > 0) {
+								grunt.file.write(
+									dest + '/' + testcase + '-js.html',
+									jade.renderFile('views/testcase-js.jade', {
+										title: 'Test: ' + testcase,
+										stylesheet: 'stylesheets/' + testcase + '.css',
+										component: html,
+										script: 'scripts/' + testcase + '.js'
+									}));
 
-						done();
-					}); // exec
+								grunt.file.write(
+									dest + '/' + testcase + '-js.json',
+									JSON.stringify({
+										description: 'Test: ' + testcase,
+										pages: [
+											{
+												url: 'file:///' + testcase + '-nojs.html',
+												smoothness: {
+													action: 'scroll'
+												}
+											}
+										]
+									}));
+							}
+
+							done();
+						}); // exec
 				}); // init
 		}); //registerTask
 
@@ -194,7 +202,7 @@ module.exports = function (grunt) {
 			var options = this.options(),
 				testcase = this.target,
 				perf_dir = options.perf_dir,
-				perf_tool = options.perf_tool || 'run_multipage_benchmarks',
+				perf_tool = options.perf_tool,
 				pagesets = options.pagesets,
 				relative = path.relative(perf_dir, pagesets),
 				done = this.async();
@@ -203,28 +211,57 @@ module.exports = function (grunt) {
 
 			exec('./' + perf_tool + ' ' +
 				'--browser=system loading_benchmark ' +
+				'--output=' + relative + '/' + testcase + '_loading.csv ' +
 				relative + '/' + testcase + '.json',
 				{ cwd: perf_dir },
 				function (error, stdout, stderr) {
 					if (error) {
 						grunt.log.error(error);
-						done();
+						done(false);
 					}
 
 					exec('./' + perf_tool + ' ' +
 						'--browser=system smoothness_benchmark ' +
+						'--output=' + relative + '/' + testcase + '_smoothness.csv ' +
 						relative + '/' + testcase + '.json',
 						{ cwd: perf_dir },
 						function (error, stdout, stderr) {
 							if (error) {
 								grunt.log.error(error);
-								done();
+								done(false);
 							}
 
 							grunt.log.writeln(stdout);
 							done();
 						});
 				});
+		});
+
+	grunt.registerMultiTask('testcase_submit',
+		'Submit benchmark data to Topcoat server',
+		function() {
+			var options = this.options(),
+				submitData = require('../lib/submitData'),
+				date = options.date || new Date().toISOString(),
+				test = this.target,
+				name = options.commit + ' ' + date,
+				done = this.async();
+
+			grunt.log.writeflags(options, test);
+
+			this.filesSrc.forEach(function (file) {
+				grunt.log.writeln('Submitting ' + file + '(' + name + ')');
+				submitData(name,
+					file,
+					{
+						device: options.device
+						//test: test
+					}, {
+						host: options.host,
+						port: options.port
+					});
+			});
+			done();
 		});
 
 };
