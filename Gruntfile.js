@@ -28,12 +28,39 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		config: config,
 		pagesets: 'page_sets',
-		testcase_prepare: {
+		testcase_build_prepare: {
+			options: {
+				target: 'testcase_build',
+				testcases: config.testcases
+			}
+		},
+		testcase_build: {
 			options: {
 				src: '<%= config["toolbox-path"] %>',
 				dest: '<%= pagesets %>'
 			}
-			// actual cases will be added below from config
+			// actual targets will be inserted by `testcase_build_prepare`
+		},
+		testcase_prepare: {
+			options: {
+				pagesets: '<%= pagesets %>'
+			},
+			testcase_run: {
+				options: {
+					ext: '.json'
+				},
+				files: {
+					src: '<%= pagesets %>/*.json'
+				}
+			},
+			testcase_submit: {
+				options: {
+					ext: '.csv'
+				},
+				files: {
+					src: '<%= pagesets %>/*.csv'
+				}
+			}
 		},
 		testcase_run: {
 			options: {
@@ -41,6 +68,7 @@ module.exports = function(grunt) {
 				perf_tool: '<%= config.perf.tool %>',
 				pagesets: '<%= pagesets %>'
 			}
+			// actual targets will be inserted by `testcase_prepare`
 		},
 		testcase_submit: {
 			options: {
@@ -48,9 +76,8 @@ module.exports = function(grunt) {
 				port: '<%= config.server.port %>',
 				commit: 'snapshot',
 				device: 'browser'
-			},
-			buttons: 'page_sets/buttons.out',
-			checkboxes: 'page_sets/checkboxes.out'
+			}
+			// actual targets will be inserted by `testcase_prepare`
 		},
 		copy: {
 			assets: {
@@ -81,24 +108,6 @@ module.exports = function(grunt) {
 		}
 	});
 
-	// add test cases from config to task configuration
-	grunt.util._.each(grunt.config('config.testcases'),
-		function (data, name) {
-			grunt.config(['testcase_prepare', name, 'options'], data);
-			grunt.log.writeln('Added testcase_prepare:' + name);
-	});
-
-	// detect and add actual tests
-	var path = require('path'),
-		tests = grunt.file.expand(
-		grunt.config('pagesets') + '/*.json'
-	).map(function (filepath) {
-		return path.basename(filepath, '.json')
-	}).forEach(function (name) {
-		grunt.config(['testcase_run', name], {});
-		grunt.log.writeln('Added testcase_run:' + name);
-	});
-
 	//Load local tasks
 	grunt.loadTasks('tasks');
 
@@ -106,14 +115,19 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-hub');
 
-	grunt.registerTask('build', ['clean:page_sets', 'testcase_prepare', 'copy:assets']);
+	grunt.registerTask('build', 'Build testcases',
+		['clean:page_sets', 'testcase_build_prepare',
+			'testcase_build', 'copy:assets', 'hub:clean']);
 
-	grunt.registerTask('clean-all', ['clean', 'hub:clean']);
+	grunt.registerTask('run', 'Run testcases',
+		['testcase_prepare:testcase_run', 'testcase_run']);
 
-	// grunt.registerTask('default', '', function(platform, theme) {
-	//	 if (chromiumSrc === "") grunt.fail.warn("Set CHROMIUM_SRC to point to the correct location\n");
-	//	 grunt.task.run('check_chromium_src', 'perf:'.concat(platform || 'mobile').concat(':').concat(theme || 'light'), 'copy:telemetry');
-	// });
-	grunt.registerTask('default', ['telemetry-submit']);
+	grunt.registerTask('submit', 'Submit testcase data',
+		['testcase_prepare:testcase_submit', 'testcase_submit']);
+
+	grunt.registerTask('clean-all', 'Clean-up', ['clean', 'hub:clean']);
+
+	grunt.registerTask('default', 'Build, run, and submit testcases',
+		['build', 'run', 'submit', 'clean']);
 };
 

@@ -33,6 +33,8 @@ var benchmark = function (db) {
 				,	test   : sanitize(req.body.test).xss()
 			});
 
+			console.log('Receiving benchmark data: ', telemetryTest.test, telemetryTest.date);
+
 			for(var i in req.body.resultName) {
 				telemetryTest.result[i] = sanitize(req.body.resultName[i]).xss();
 			}

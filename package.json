@@ -12,6 +12,7 @@
 		"start": "node app.js"
 	},
 	"dependencies": {
+		"csv": "~0.3.3",
 		"express": "3.0.0",
 		"jade": "*",
 		"stylus": "*",

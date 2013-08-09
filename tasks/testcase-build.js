@@ -1,5 +1,5 @@
 /*
- * Creates and executes Telemetry benchmarks for all components
+ * Creates Telemetry benchmarks for all components
  */
 
 module.exports = function (grunt) {
@@ -94,8 +94,8 @@ module.exports = function (grunt) {
 		grunt.log.error('Unknown build process or wrong toolbox directory');
 	}
 
-	grunt.registerMultiTask('testcase_prepare',
-		'Initialize DTAG Components Testcases',
+	grunt.registerMultiTask('testcase_build',
+		'Build DTAG Components Testcases',
 		function () {
 			var options = this.options(),
 				src = options.src,
@@ -195,73 +195,5 @@ module.exports = function (grunt) {
 						}); // exec
 				}); // init
 		}); //registerTask
-
-	grunt.registerMultiTask('testcase_run',
-		'Run Telemetry benchmark on DTAG Components',
-		function() {
-			var options = this.options(),
-				testcase = this.target,
-				perf_dir = options.perf_dir,
-				perf_tool = options.perf_tool,
-				pagesets = options.pagesets,
-				relative = path.relative(perf_dir, pagesets),
-				done = this.async();
-
-			grunt.log.writeflags(options, 'Options');
-
-			exec('./' + perf_tool + ' ' +
-				'--browser=system loading_benchmark ' +
-				'--output=' + relative + '/' + testcase + '_loading.csv ' +
-				relative + '/' + testcase + '.json',
-				{ cwd: perf_dir },
-				function (error, stdout, stderr) {
-					if (error) {
-						grunt.log.error(error);
-						done(false);
-					}
-
-					exec('./' + perf_tool + ' ' +
-						'--browser=system smoothness_benchmark ' +
-						'--output=' + relative + '/' + testcase + '_smoothness.csv ' +
-						relative + '/' + testcase + '.json',
-						{ cwd: perf_dir },
-						function (error, stdout, stderr) {
-							if (error) {
-								grunt.log.error(error);
-								done(false);
-							}
-
-							grunt.log.writeln(stdout);
-							done();
-						});
-				});
-		});
-
-	grunt.registerMultiTask('testcase_submit',
-		'Submit benchmark data to Topcoat server',
-		function() {
-			var options = this.options(),
-				submitData = require('../lib/submitData'),
-				date = options.date || new Date().toISOString(),
-				test = this.target,
-				name = options.commit + ' ' + date,
-				done = this.async();
-
-			grunt.log.writeflags(options, test);
-
-			this.filesSrc.forEach(function (file) {
-				grunt.log.writeln('Submitting ' + file + '(' + name + ')');
-				submitData(name,
-					file,
-					{
-						device: options.device
-						//test: test
-					}, {
-						host: options.host,
-						port: options.port
-					});
-			});
-			done();
-		});
 
 };
