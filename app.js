@@ -57,7 +57,8 @@ app.get('/', function(req, res){
 
 	res.render('index', {
 		layout : 'landing-layout.jade',
-		title : 'DTAG Components Benchmarks'
+		title : 'DTAG Components Benchmarks',
+		config : config
 	});
 
 });

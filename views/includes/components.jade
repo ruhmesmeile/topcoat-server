@@ -1,7 +1,4 @@
-li#buttons: a(href='#') Buttons
-li#forms: a(href='#') Forms
-li#textstyling: a(href='#') Text Styling
-li#tables: a(href='#') Tables
-li#list: a(href='#') List
-li#tooltip: a(href='#') Tooltip
-li#toolbar: a(href='#') Toolbar
+each data, name in config.testcases
+	li(id=name)
+		a(href='#')
+			!{name}
