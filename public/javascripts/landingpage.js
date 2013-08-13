@@ -49,6 +49,7 @@ _.map(document.querySelectorAll('.baseline'), function (a) {
 });
 
 function displayPlot () {
+	console.log('displayPort ', this)
 	var placeholder = document.querySelector('#placeholder');
 	var spinner = document.querySelector('#front-spinner');
 	spinner.style.display = 'block';
@@ -88,4 +89,4 @@ $('select.docNav').on('change', function () {
 	location.href = this.value;
 });
 
-displayPlot.call(document.querySelector('.button a'));
+displayPlot.call(document.querySelector('ul.active a'));

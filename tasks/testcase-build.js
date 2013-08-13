@@ -191,7 +191,19 @@ module.exports = function (grunt) {
 									}));
 							}
 
-							done();
+							// get commit SHA and modify testcase_submit config
+							exec('git log -1 --pretty=format:"%H %ci"', {cwd: src},
+								function(error, stdout, stderr) {
+									if (error) {
+										// silently ignore
+										done();
+									}
+
+									grunt.config('testcase_submit.options.name',
+										stdout);
+									done();
+								});
+
 						}); // exec
 				}); // init
 		}); //registerTask

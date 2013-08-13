@@ -128,6 +128,6 @@ module.exports = function(grunt) {
 	grunt.registerTask('clean-all', 'Clean-up', ['clean', 'hub:clean']);
 
 	grunt.registerTask('default', 'Build, run, and submit testcases',
-		['build', 'run', 'submit', 'clean']);
+		['build', 'run', 'submit']);
 };
 

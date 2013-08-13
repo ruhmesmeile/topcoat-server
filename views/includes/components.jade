@@ -1,4 +1,4 @@
 each data, name in config.testcases
-	li(id=name)
-		a(href='#')
-			!{name}
+	li(id=name + '-nojs'): a(href='#'): !{name} (no JS)
+	if data.scripts.length > 0
+		li(id=name + '-js'): a(href='#'): !{name} (JS)

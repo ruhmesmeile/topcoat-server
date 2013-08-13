@@ -1,19 +1,30 @@
 // includes/components-links.jade
 
-ul.buttons.active.three-quarters
-	header
-		h2(data-github='buttons') Buttons
-	li
-		a.topcoat-button(href='/dashboard?test=buttons&test=buttons&device=desktop') details
-		//a.topcoat-button.baseline(href='/baseline?test=smoothness_benchmark_dtag_buttons&test=smoothness_benchmark_dtag_button-base&test=loading_benchmark_topcoat_button&test=loading_benchmark_topcoat_button-base&device=Desktop') baseline
-ul.forms.active.three-quarters
-	header
-		h2(data-github='forms') Forms
-	li
-		a.topcoat-button(href='/dashboard?test=smoothness_benchmark_dtag_forms&test=loading_benchmark_dtag_forms&device=Desktop') details
-		//a.topcoat-button.baseline(href='/baseline?test=smoothness_benchmark_dtag_forms&test=smoothness_benchmark_dtag_forms-base&test=loading_benchmark_dtag_forms&test=loading_benchmark_dtag_forms-base&device=Desktop') baseline
+mixin plot-ul(name, active, title)
+	ul.three-quarters(class=name + ' ' + active)
+		header
+			h2: !{title}
 
-// includes/flip.jade
+		- var link = '?device=browser&test=' + name + '_loading'
+		- link = link + '&test=' + name + '_smoothness'
+
+		li
+			a.topcoat-button(href='/dashboard' + link) details
+			a.topcoat-button.baseline(href='/baseline' + link) baseline
+
+
+- var active = 'active'
+each data, name in config.testcases
+	+plot-ul(name + '-nojs', active, name + ' not using JavaScript')
+
+	if active == 'active'
+		- active = 'not-active'
+
+	// JS version
+	if data.scripts.length > 0
+		+plot-ul(name + '-js', active, name + ' using JavaScript')
+
+
 include flip
 
 
