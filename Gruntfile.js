@@ -81,16 +81,27 @@ module.exports = function(grunt) {
 		},
 		copy: {
 			assets: {
-				files: [{
-					expand: true,
-					src: [
-						'fonts/**',
-						'images/**',
-						'scripts/require-jquery.min.js'
-					],
-					dest: '<%= pagesets %>/',
-					cwd: '<%= config["toolbox-path"] %>/dist/'
-				}]
+				files: [
+					{
+						expand: true,
+						src: [
+							'fonts/**',
+							'images/**',
+							'scripts/require-jquery.min.js'
+						],
+						dest: '<%= pagesets %>/',
+						cwd: '<%= config["toolbox-path"] %>/build/components/dist/'
+					}, {
+						expand: true,
+						src: [
+							'fonts/**',
+							'images/**',
+							'scripts/require-jquery.min.js'
+						],
+						dest: '<%= pagesets %>/',
+						cwd: '<%= config["toolbox-path"] %>/dist/'
+					}
+				]
 			}
 		},
 		clean: {
@@ -117,7 +128,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('build', 'Build testcases',
 		['clean:page_sets', 'testcase_build_prepare',
-			'testcase_build', 'copy:assets', 'hub:clean']);
+			'testcase_build', 'copy:assets']);
 
 	grunt.registerTask('run', 'Run testcases',
 		['testcase_prepare:testcase_run', 'testcase_run']);

@@ -49,7 +49,6 @@ _.map(document.querySelectorAll('.baseline'), function (a) {
 });
 
 function displayPlot () {
-	console.log('displayPort ', this)
 	var placeholder = document.querySelector('#placeholder');
 	var spinner = document.querySelector('#front-spinner');
 	spinner.style.display = 'block';
