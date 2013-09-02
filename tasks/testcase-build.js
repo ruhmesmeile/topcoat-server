@@ -123,7 +123,7 @@ module.exports = function (grunt) {
 					// @TODO: evaluate use of grunt-hub here
 					exec('grunt components', {cwd: src},
 						function (error, stdout, stderr) {
-							var srcFile;
+							var srcFile, requireScript = false;
 
 							if (error) {
 								grunt.log.error(error);
@@ -161,7 +161,9 @@ module.exports = function (grunt) {
 									src + '/build/components/dist/scripts/main.js',
 									src + '/build/components/dist/scripts/main.min.js',
 									src + '/dist/scripts/main.js',
-									src + '/dist/scripts/main.min.js'
+									src + '/dist/scripts/main.min.js',
+									src + '/dist/scripts/dtag.js',
+									src + '/dist/scripts/dtag.min.js'
 								].forEach(function (filepath) {
 									if (grunt.file.exists(filepath)) {
 										srcFile = filepath;
@@ -173,6 +175,9 @@ module.exports = function (grunt) {
 									return false;
 								}
 
+								if (!srcFile.match(/dtag/)) {
+									requireScript = true;
+								}
 
 								grunt.log.writeln('Using', srcFile);
 								grunt.file.copy(srcFile,
@@ -210,7 +215,8 @@ module.exports = function (grunt) {
 										title: 'Test: ' + testcase,
 										stylesheet: 'stylesheets/' + testcase + '.css',
 										component: html,
-										script: 'scripts/' + testcase + '.js'
+										script: 'scripts/' + testcase + '.js',
+										requireScript: requireScript
 									}));
 
 								grunt.file.write(

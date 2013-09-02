@@ -7,7 +7,10 @@ html
 	head
 		title= title
 		link(rel='stylesheet', href=stylesheet)
-		script(type='text/javascript', data-main=script, src='scripts/require-jquery.min.js')
+		-if (requireScript)
+			script(type='text/javascript', data-main=script, src='scripts/require-jquery.min.js')
+		-else
+			script(type='text/javascript', src=script)
 		script(type="text/javascript").
 			var html = document.getElementsByTagName('html')[0];
 			html.setAttribute('class', 'js');
